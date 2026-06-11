@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Calculadora de Renta · AD Bienes Raíces Monterrey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{
+  --azul:#1F3D73;--azul2:#3F6FB5;--azul-claro:#DDE8F8;
+  --naranja:#E56A00;--naranja-s:#F29A4A;
+  --blanco:#fff;--gris-bg:#F5F5F3;--gris-txt:#5E5E5E;--negro:#1A1A1A;
+  --fd:'Playfair Display',Georgia,serif;--fb:'DM Sans',sans-serif;
+  --radius:14px;--shadow:0 4px 24px rgba(31,61,115,.09);
+  --shadow-lg:0 16px 48px rgba(31,61,115,.14);--trans:.3s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);color:var(--negro);background:var(--gris-bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 0;transition:all var(--trans)}
+.nav.scrolled{background:var(--blanco);box-shadow:var(--shadow);padding:.65rem 0}
+.nav-inner{max-width:1000px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo img{height:28px;width:auto}
+.logo-b{display:block}.logo-c{display:none}
+.nav.scrolled .logo-b{display:none}.nav.scrolled .logo-c{display:block}
+.nav-back{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:500;color:rgba(255,255,255,.85);transition:color var(--trans)}
+.nav.scrolled .nav-back{color:var(--azul2)}
+.nav-back:hover{color:var(--naranja-s)}
+.hero{background:var(--azul);padding:7.5rem 1.5rem 7rem;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(63,111,181,.35),transparent 70%)}
+.hero-inner{position:relative;z-index:2;max-width:760px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:.4rem 1.1rem;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--naranja-s);margin-bottom:1.4rem}
+.hero h1{font-family:var(--fd);font-size:clamp(2rem,5vw,3.2rem);font-weight:700;color:var(--blanco);line-height:1.15;margin-bottom:1.1rem}
+.hero h1 em{font-style:italic;color:var(--naranja-s)}
+.hero p{font-size:1.02rem;color:rgba(255,255,255,.75);max-width:560px;margin:0 auto;line-height:1.7}
+.calc-wrap{max-width:760px;margin:-4rem auto 4rem;padding:0 1.5rem;position:relative;z-index:5}
+.calc-card{background:var(--blanco);border-radius:20px;box-shadow:var(--shadow-lg);padding:2.5rem}
+.mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:2rem;background:var(--gris-bg);border-radius:12px;padding:.45rem}
+.mode-btn{padding:.85rem .5rem;border-radius:9px;border:none;background:transparent;font-family:var(--fb);font-size:.85rem;font-weight:600;color:var(--gris-txt);cursor:pointer;transition:all var(--trans);display:flex;align-items:center;justify-content:center;gap:.5rem}
+.mode-btn.active{background:var(--azul);color:var(--blanco);box-shadow:0 2px 8px rgba(31,61,115,.25)}
+.mode-btn.active i{color:var(--naranja-s)}
+.step-label{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--naranja);margin-bottom:1.25rem}
+.fgroup{margin-bottom:1.4rem}
+.fgroup label{display:block;font-size:.85rem;font-weight:600;color:var(--azul);margin-bottom:.5rem}
+.fgroup select,.fgroup input[type=text],.fgroup input[type=tel]{width:100%;padding:.8rem 1rem;border:1.5px solid #E0E0E0;border-radius:10px;font-family:var(--fb);font-size:.95rem;color:var(--negro);background:var(--blanco);transition:border-color var(--trans);outline:none}
+.fgroup select:focus,.fgroup input:focus{border-color:var(--azul2)}
+.toggle-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.tog{padding:.85rem;border-radius:10px;border:1.5px solid #E0E0E0;background:var(--blanco);font-family:var(--fb);font-size:.9rem;font-weight:500;color:var(--gris-txt);cursor:pointer;transition:all var(--trans);display:flex;align-items:center;justify-content:center;gap:.5rem}
+.tog.active{background:var(--azul);border-color:var(--azul);color:var(--blanco)}
+.tog.active i{color:var(--naranja-s)}
+.m2-row{display:flex;gap:1rem;align-items:center}
+.m2-row input[type=range]{flex:1;accent-color:var(--naranja)}
+.m2-val{min-width:90px;text-align:center;background:var(--azul-claro);border-radius:8px;padding:.5rem .75rem;font-weight:700;color:var(--azul);font-size:.95rem}
+.bracket-hint{font-size:.8rem;color:var(--naranja);font-weight:600;margin-top:.4rem}
+.switch-row{display:flex;align-items:center;justify-content:space-between;background:var(--gris-bg);border-radius:10px;padding:.85rem 1rem}
+.switch-row span{font-size:.9rem;font-weight:500;color:var(--negro)}
+.sw{position:relative;width:46px;height:26px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0}
+.sl{position:absolute;cursor:pointer;inset:0;background:#D0D0D0;border-radius:26px;transition:var(--trans)}
+.sl::before{content:'';position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:var(--blanco);border-radius:50%;transition:var(--trans)}
+.sw input:checked + .sl{background:var(--naranja)}
+.sw input:checked + .sl::before{transform:translateX(20px)}
+.presup-input{position:relative}
+.presup-input::before{content:'$';position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-weight:700;color:var(--azul);font-size:1rem}
+.presup-input input{padding-left:2rem !important;font-weight:600;font-size:1.05rem !important}
+.presup-warn{display:none;background:#FEF4E6;border-left:3px solid var(--naranja);border-radius:0 10px 10px 0;padding:1rem 1.25rem;font-size:.82rem;color:#7a4a10;line-height:1.65;margin-top:.75rem}
+.presup-warn.show{display:block}
+.btn{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;background:var(--naranja);color:var(--blanco);font-family:var(--fb);font-weight:600;font-size:1rem;padding:1rem;border-radius:50px;border:none;cursor:pointer;transition:all var(--trans);margin-top:.5rem}
+.btn:hover{background:#c45c00;transform:translateY(-2px);box-shadow:0 8px 24px rgba(229,106,0,.3)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.lead-gate,.result{display:none}
+.lead-gate.show,.result.show{display:block}
+.lead-head{text-align:center;margin-bottom:1.5rem}
+.lead-head i{font-size:2rem;color:var(--naranja);margin-bottom:.6rem}
+.lead-head h3{font-family:var(--fd);font-size:1.3rem;color:var(--azul);margin-bottom:.4rem}
+.lead-head p{font-size:.85rem;color:var(--gris-txt)}
+.lead-priv{font-size:.72rem;color:var(--gris-txt);text-align:center;margin-top:.9rem;opacity:.75}
+.asesor-q{display:none;animation:fadein .3s ease}
+.asesor-q.show{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.res-head{text-align:center;margin-bottom:1.5rem}
+.res-head .res-sub{font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--naranja);margin-bottom:.5rem}
+.res-head h3{font-family:var(--fd);font-size:1.15rem;color:var(--gris-txt);font-weight:400}
+.res-range{background:var(--azul);border-radius:16px;padding:2rem;text-align:center;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.res-range::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(63,111,181,.4),transparent 70%)}
+.res-main{position:relative;font-family:var(--fd);font-size:clamp(1.9rem,5vw,2.7rem);font-weight:700;color:var(--blanco);line-height:1.1}
+.res-rangelabel{position:relative;font-size:.85rem;color:rgba(255,255,255,.65);margin-top:.6rem}
+.res-rangelabel b{color:var(--naranja-s)}
+.res-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.25rem}
+.rm-cell{background:var(--gris-bg);border-radius:10px;padding:.85rem;text-align:center}
+.rm-cell .rmv{font-weight:700;color:var(--azul);font-size:.95rem}
+.rm-cell .rml{font-size:.7rem;color:var(--gris-txt);margin-top:.2rem}
+.res-disclaimer{background:#FEF9E7;border-left:3px solid #D4AC0D;border-radius:0 10px 10px 0;padding:1rem 1.25rem;font-size:.78rem;color:#6b5d1f;line-height:1.6;margin-bottom:1.25rem}
+.res-rareza{background:#FDEDEC;border-left:3px solid #C0392B;border-radius:0 10px 10px 0;padding:1rem 1.25rem;font-size:.8rem;color:#7b2d23;line-height:1.6;margin-bottom:1.25rem;display:none}
+.res-rareza.show{display:block}
+.res-roomies{background:#EAF6EF;border-left:3px solid #1A7A4A;border-radius:0 10px 10px 0;padding:1rem 1.25rem;font-size:.82rem;color:#1d5c3c;line-height:1.65;margin-bottom:1.25rem;display:none}
+.res-roomies.show{display:block}
+.res-cta{background:var(--azul-claro);border-radius:12px;padding:1.5rem;text-align:center}
+.res-cta h4{font-family:var(--fd);font-size:1.05rem;color:var(--azul);margin-bottom:.4rem}
+.res-cta p{font-size:.85rem;color:var(--azul2);margin-bottom:1rem}
+.res-cta .btn{width:auto;padding:.75rem 1.75rem;margin:0}
+.res-again{display:block;text-align:center;margin-top:1.25rem;font-size:.85rem;color:var(--azul2);cursor:pointer;background:none;border:none;font-family:var(--fb);width:100%}
+.res-again:hover{color:var(--naranja)}
+.zona-list{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.25rem}
+.zona-item{display:flex;align-items:center;gap:1rem;background:var(--gris-bg);border-radius:12px;padding:1rem 1.25rem;border-left:4px solid transparent}
+.zona-item.fit-holgado{border-left-color:#1A7A4A}
+.zona-item.fit-justo{border-left-color:#D4AC0D}
+.zona-item.fit-no{border-left-color:#C0392B;opacity:.75}
+.zi-icon{width:38px;height:38px;border-radius:9px;background:var(--azul-claro);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.zi-icon i{color:var(--azul);font-size:.95rem}
+.zi-body{flex:1;min-width:0}
+.zi-name{font-weight:600;color:var(--azul);font-size:.9rem;line-height:1.3}
+.zi-sub{font-size:.75rem;color:var(--gris-txt)}
+.zi-rare{color:#C0392B;font-weight:600}
+.zi-price{text-align:right;flex-shrink:0}
+.zi-price .zp{font-weight:700;color:var(--azul);font-size:.95rem}
+.zi-price .zl{font-size:.68rem;color:var(--gris-txt)}
+.zona-empty{background:#FDEDEC;border-left:3px solid #C0392B;border-radius:0 10px 10px 0;padding:1rem 1.25rem;font-size:.82rem;color:#7b2d23;line-height:1.6;margin-bottom:1rem}
+.info-sec{max-width:760px;margin:0 auto 4rem;padding:0 1.5rem}
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.info-card{background:var(--blanco);border-radius:var(--radius);padding:1.5rem;text-align:center;box-shadow:var(--shadow)}
+.info-card i{font-size:1.4rem;color:var(--naranja);margin-bottom:.6rem}
+.info-card h5{font-size:.85rem;font-weight:600;color:var(--azul);margin-bottom:.3rem}
+.info-card p{font-size:.75rem;color:var(--gris-txt);line-height:1.5}
+.footer{background:var(--negro);padding:2rem 0;color:rgba(255,255,255,.5);text-align:center}
+.footer img{height:26px;margin:0 auto .75rem;width:auto}
+.footer p{font-size:.75rem}
+@media(max-width:640px){
+  .calc-card{padding:1.75rem 1.25rem}
+  .res-meta{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}
+  .hero{padding:6.5rem 1.25rem 6rem}
+  .mode-btn{font-size:.78rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="navbar">
+  <div class="nav-inner">
+    <a href="https://adbrmty.github.io" class="nav-logo">
+      <img src="logo-blanco.png" alt="ADBR" class="logo-b"/>
+      <img src="logo-color.png" alt="ADBR" class="logo-c"/>
+    </a>
+    <a href="https://adbrmty.github.io" class="nav-back"><i class="fa-solid fa-arrow-left"></i> Inicio</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag"><i class="fa-solid fa-calculator"></i> Herramienta gratuita · Renta habitacional</div>
+    <h1>¿Cuánto cuesta rentar<br/><em>en tu zona ideal?</em></h1>
+    <p>Calcula un estimado real de renta mensual en Monterrey y su Zona Metropolitana — basado en miles de operaciones concretadas, no en precios de anuncio.</p>
+  </div>
+</section>
+
+<div class="calc-wrap">
+  <div class="calc-card">
+
+    <div class="mode-toggle" id="mode-toggle">
+      <button class="mode-btn active" data-mode="caract"><i class="fa-solid fa-house-circle-check"></i> Por características</button>
+      <button class="mode-btn" data-mode="presup"><i class="fa-solid fa-wallet"></i> Por presupuesto</button>
+    </div>
+
+    <!-- MODO CARACTERÍSTICAS -->
+    <div id="paso-form">
+      <div class="step-label">Paso 1 de 2 · Describe la propiedad</div>
+      <div class="fgroup">
+        <label>Municipio</label>
+        <select id="f-muni"></select>
+      </div>
+      <div class="fgroup" id="zona-group" style="display:none">
+        <label>Zona</label>
+        <select id="f-zona"></select>
+      </div>
+      <div class="fgroup">
+        <label>Tipo de propiedad</label>
+        <div class="toggle-row">
+          <button type="button" class="tog active" data-tipo="Departamentos"><i class="fa-solid fa-building"></i> Departamento</button>
+          <button type="button" class="tog" data-tipo="Casas"><i class="fa-solid fa-house"></i> Casa</button>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label>Tamaño aproximado (m² de construcción)</label>
+        <div class="m2-row">
+          <input type="range" id="f-m2" min="30" max="600" step="5" value="90"/>
+          <div class="m2-val"><span id="m2-display">90</span> m²</div>
+        </div>
+        <div class="bracket-hint" id="bracket-hint"></div>
+      </div>
+      <div class="fgroup">
+        <div class="switch-row">
+          <span><i class="fa-solid fa-couch" style="color:var(--azul2);margin-right:.5rem"></i>Amueblado</span>
+          <label class="sw"><input type="checkbox" id="f-amueblado"/><span class="sl"></span></label>
+        </div>
+      </div>
+      <button class="btn" id="btn-calc">Calcular estimación <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <!-- MODO PRESUPUESTO -->
+    <div id="paso-presup" style="display:none">
+      <div class="step-label">Paso 1 de 2 · Define tu búsqueda</div>
+      <div class="fgroup">
+        <label>Presupuesto máximo mensual (MXN)</label>
+        <div class="presup-input">
+          <input type="text" inputmode="numeric" id="p-presup" placeholder="Ej. 25,000"/>
+        </div>
+        <div class="presup-warn" id="presup-warn"></div>
+      </div>
+      <div class="fgroup">
+        <label>Tipo de propiedad</label>
+        <div class="toggle-row">
+          <button type="button" class="tog ptog active" data-tipo="Departamentos"><i class="fa-solid fa-building"></i> Departamento</button>
+          <button type="button" class="tog ptog" data-tipo="Casas"><i class="fa-solid fa-house"></i> Casa</button>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label>Tamaño mínimo que necesitas (m²)</label>
+        <div class="m2-row">
+          <input type="range" id="p-m2" min="30" max="500" step="5" value="80"/>
+          <div class="m2-val"><span id="pm2-display">80</span> m²</div>
+        </div>
+        <div class="bracket-hint" id="p-bracket-hint"></div>
+      </div>
+      <div class="fgroup">
+        <div class="switch-row">
+          <span><i class="fa-solid fa-couch" style="color:var(--azul2);margin-right:.5rem"></i>Amueblado</span>
+          <label class="sw"><input type="checkbox" id="p-amueblado"/><span class="sl"></span></label>
+        </div>
+      </div>
+      <button class="btn" id="btn-presup">Descubrir mis zonas ideales <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <!-- LEAD GATE -->
+    <div class="lead-gate" id="paso-lead">
+      <div class="step-label">Paso 2 de 2 · Tu resultado está listo</div>
+      <div class="lead-head">
+        <i class="fa-solid fa-unlock-keyhole"></i>
+        <h3>Un último paso</h3>
+        <p>Déjanos tu nombre y WhatsApp para mostrarte el resultado. Un asesor podrá ayudarte a encontrar opciones reales.</p>
+      </div>
+      <div class="fgroup">
+        <label>Nombre</label>
+        <input type="text" id="l-nombre" placeholder="Tu nombre" autocomplete="name"/>
+      </div>
+      <div class="fgroup">
+        <label>WhatsApp</label>
+        <input type="tel" id="l-tel" placeholder="81 XXXX XXXX" autocomplete="tel"/>
+      </div>
+      <div class="fgroup">
+        <div class="switch-row">
+          <span><i class="fa-solid fa-user-tie" style="color:var(--azul2);margin-right:.5rem"></i>Ya estoy en contacto con un asesor ADBR</span>
+          <label class="sw"><input type="checkbox" id="l-tiene-asesor"/><span class="sl"></span></label>
+        </div>
+      </div>
+      <div class="fgroup asesor-q" id="asesor-q">
+        <label>¿Quién es tu asesor?</label>
+        <select id="l-asesor">
+          <option value="" disabled selected>Selecciona a tu asesor</option>
+        </select>
+      </div>
+      <button class="btn" id="btn-lead">Ver mi resultado <i class="fa-solid fa-eye"></i></button>
+      <p class="lead-priv"><i class="fa-solid fa-lock"></i> Tus datos solo se usan para que un asesor ADBR pueda contactarte. Sin spam.</p>
+    </div>
+
+    <!-- RESULTADO CARACTERÍSTICAS -->
+    <div class="result" id="paso-result">
+      <div class="res-head">
+        <div class="res-sub">Estimación de renta mensual</div>
+        <h3 id="res-desc"></h3>
+      </div>
+      <div class="res-range">
+        <div class="res-main" id="res-main"></div>
+        <div class="res-rangelabel">Rango estimado: <b id="res-rango"></b></div>
+      </div>
+      <div class="res-meta">
+        <div class="rm-cell"><div class="rmv" id="rm-pm2"></div><div class="rml">precio por m²</div></div>
+        <div class="rm-cell"><div class="rmv" id="rm-n"></div><div class="rml">operaciones de referencia</div></div>
+        <div class="rm-cell"><div class="rmv" id="rm-conf"></div><div class="rml">nivel de confianza</div></div>
+      </div>
+      <div class="res-rareza" id="res-rareza">
+        <strong>Propiedad poco común:</strong> Este segmento tiene pocas operaciones registradas en la zona — las propiedades con estas características existen, pero son difíciles de encontrar y suelen rentarse rápido cuando aparecen.
+      </div>
+      <div class="res-disclaimer">
+        <strong>Importante:</strong> Esta es una estimación informativa basada en operaciones de renta concretadas en la zona — no constituye un avalúo ni una oferta. El precio real depende de la ubicación exacta, condiciones de la propiedad, antigüedad, amenidades y momento del mercado.
+      </div>
+      <div class="res-cta">
+        <h4>¿Buscas propiedad en esta zona?</h4>
+        <p>Nuestros asesores tienen opciones reales que se ajustan a tu búsqueda.</p>
+        <a href="https://wa.me/528181431003?text=Hola%2C%20us%C3%A9%20la%20calculadora%20de%20renta%20y%20me%20interesa%20encontrar%20propiedad" target="_blank" class="btn"><i class="fa-brands fa-whatsapp"></i> Hablar con un asesor</a>
+      </div>
+      <button class="res-again btn-again"><i class="fa-solid fa-rotate-left"></i> Calcular otra estimación</button>
+    </div>
+
+    <!-- RESULTADO PRESUPUESTO -->
+    <div class="result" id="paso-result-p">
+      <div class="res-head">
+        <div class="res-sub">Zonas donde tu presupuesto alcanza</div>
+        <h3 id="resp-desc"></h3>
+      </div>
+      <div class="zona-empty" id="zona-empty" style="display:none"></div>
+      <div class="zona-list" id="zona-list"></div>
+      <div class="res-roomies" id="res-roomies"></div>
+      <div class="res-rareza" id="resp-rareza">
+        <strong>Sobre las zonas marcadas con oferta limitada:</strong> Tienen pocas operaciones registradas para este tipo de propiedad — pueden existir opciones, pero son poco comunes, difíciles de encontrar y se rentan rápido. Si tu presupuesto está justo en el límite, considera ampliarlo ligeramente para facilitar la búsqueda.
+      </div>
+      <div class="res-disclaimer">
+        <strong>Importante:</strong> Estimaciones informativas basadas en operaciones concretadas — no constituyen avalúo ni oferta. El precio real varía según ubicación exacta, condiciones, antigüedad y amenidades de cada propiedad.
+      </div>
+      <div class="res-cta">
+        <h4>¿Quieres ver opciones reales en estas zonas?</h4>
+        <p>Nuestros asesores te muestran propiedades disponibles dentro de tu presupuesto.</p>
+        <a href="https://wa.me/528181431003?text=Hola%2C%20us%C3%A9%20la%20calculadora%20por%20presupuesto%20y%20quiero%20ver%20opciones" target="_blank" class="btn"><i class="fa-brands fa-whatsapp"></i> Hablar con un asesor</a>
+      </div>
+      <button class="res-again btn-again"><i class="fa-solid fa-rotate-left"></i> Hacer otra búsqueda</button>
+    </div>
+
+  </div>
+</div>
+
+<section class="info-sec">
+  <div class="info-grid">
+    <div class="info-card">
+      <i class="fa-solid fa-database"></i>
+      <h5>Datos de cierres reales</h5>
+      <p>Basado en miles de contratos de renta firmados — no en precios de anuncio que después se negocian.</p>
+    </div>
+    <div class="info-card">
+      <i class="fa-solid fa-chart-line"></i>
+      <h5>Ajustado a pesos actuales</h5>
+      <p>Los valores históricos se ajustan por inflación (INPC) y se anclan en operaciones recientes 2025–2026.</p>
+    </div>
+    <div class="info-card">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <h5>Zonas reales de la ciudad</h5>
+      <p>Monterrey y San Pedro segmentados por zona — porque no renta igual el Centro que Cumbres o Valle Oriente.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <img src="logo-blanco.png" alt="AD Bienes Raíces Monterrey"/>
+  <p>© 2026 AD Bienes Raíces Monterrey · adbr.mx · Esta herramienta es informativa y no constituye avalúo</p>
+</footer>
+
+<script>
+const DATA = {"meta":{"generado":"2026-06","registros":5145,"periodo":"2019–2026","version":2},"factor_amueblado":1.12,"brackets":[{"key":"compacto","label":"Loft / 1 recámara","min":25,"max":55},{"key":"chico","label":"1–2 recámaras","min":55,"max":80},{"key":"mediano","label":"2 recámaras","min":80,"max":115},{"key":"medGrande","label":"2–3 recámaras","min":115,"max":160},{"key":"grande","label":"3 recámaras","min":160,"max":230},{"key":"xl","label":"3–4 recámaras","min":230,"max":330},{"key":"xxl","label":"4+ recámaras","min":330,"max":1500}],"segmentos":{"Monterrey":{"Casas":{"n":889,"brackets":{"chico":{"pm2":114.2,"n":9,"conf":"baja","p25":0.971,"p75":1.52},"mediano":{"pm2":157.1,"n":26,"conf":"media","p25":0.925,"p75":1.192},"medGrande":{"pm2":146.6,"n":73,"conf":"alta","p25":0.835,"p75":1.243},"grande":{"pm2":119.1,"n":296,"conf":"alta","p25":0.927,"p75":1.081},"xl":{"pm2":118.8,"n":313,"conf":"alta","p25":0.876,"p75":1.08},"xxl":{"pm2":116.5,"n":168,"conf":"alta","p25":0.912,"p75":1.202}},"pm2_global":120.6},"Departamentos":{"n":1141,"brackets":{"compacto":{"pm2":375.9,"n":141,"conf":"alta","p25":0.787,"p75":1.104},"chico":{"pm2":327.5,"n":229,"conf":"alta","p25":0.874,"p75":1.084},"mediano":{"pm2":271.1,"n":445,"conf":"alta","p25":0.793,"p75":1.236},"medGrande":{"pm2":229.3,"n":241,"conf":"alta","p25":0.786,"p75":1.18},"grande":{"pm2":206.1,"n":63,"conf":"alta","p25":0.858,"p75":1.165},"xl":{"pm2":139.8,"n":20,"conf":"media","p25":0.802,"p75":1.115}},"pm2_global":277.0},"zonas":{"Carretera Nacional":{"Casas":{"n":189,"brackets":{"medGrande":{"pm2":212.2,"n":6,"conf":"media","p25":0.937,"p75":1.051},"grande":{"pm2":134.5,"n":50,"conf":"alta","p25":0.978,"p75":1.058},"xl":{"pm2":129.0,"n":64,"conf":"alta","p25":0.93,"p75":1.042},"xxl":{"pm2":126.8,"n":67,"conf":"alta","p25":0.891,"p75":1.195}},"pm2_global":131.0},"Departamentos":{"n":68,"brackets":{"mediano":{"pm2":293.0,"n":27,"conf":"alta","p25":0.879,"p75":1.264},"medGrande":{"pm2":267.2,"n":26,"conf":"media","p25":0.88,"p75":1.113},"grande":{"pm2":251.6,"n":9,"conf":"media","p25":0.829,"p75":1.057},"xl":{"pm2":158.3,"n":4,"conf":"baja","p25":1.0,"p75":1.0}},"pm2_global":271.5}},"Tec / Sur-Centro":{"Casas":{"n":109,"brackets":{"medGrande":{"pm2":159.8,"n":8,"conf":"baja","p25":0.938,"p75":1.265},"grande":{"pm2":123.6,"n":32,"conf":"alta","p25":0.982,"p75":1.109},"xl":{"pm2":130.9,"n":43,"conf":"alta","p25":0.988,"p75":1.201},"xxl":{"pm2":132.4,"n":22,"conf":"media","p25":0.902,"p75":1.083}},"pm2_global":130.1},"Departamentos":{"n":308,"brackets":{"compacto":{"pm2":376.1,"n":28,"conf":"media","p25":0.916,"p75":1.188},"chico":{"pm2":342.3,"n":55,"conf":"alta","p25":0.877,"p75":1.039},"mediano":{"pm2":334.4,"n":118,"conf":"alta","p25":0.799,"p75":1.119},"medGrande":{"pm2":254.3,"n":77,"conf":"alta","p25":0.968,"p75":1.196},"grande":{"pm2":250.2,"n":24,"conf":"alta","p25":0.931,"p75":1.075},"xl":{"pm2":201.0,"n":6,"conf":"baja","p25":0.775,"p75":1.21}},"pm2_global":318.7}},"San Jerónimo / Valle Pte.":{"Casas":{"n":73,"brackets":{"grande":{"pm2":125.3,"n":16,"conf":"media","p25":0.825,"p75":1.128},"xl":{"pm2":121.6,"n":39,"conf":"alta","p25":0.984,"p75":1.132},"xxl":{"pm2":113.1,"n":15,"conf":"media","p25":0.855,"p75":1.126}},"pm2_global":129.6},"Departamentos":{"n":262,"brackets":{"compacto":{"pm2":334.5,"n":20,"conf":"media","p25":0.94,"p75":1.495},"chico":{"pm2":310.9,"n":41,"conf":"alta","p25":0.725,"p75":1.293},"mediano":{"pm2":272.1,"n":109,"conf":"alta","p25":0.917,"p75":1.217},"medGrande":{"pm2":241.9,"n":69,"conf":"alta","p25":0.789,"p75":1.112},"grande":{"pm2":190.3,"n":19,"conf":"media","p25":0.84,"p75":1.147},"xl":{"pm2":176.8,"n":4,"conf":"baja","p25":0.808,"p75":1.197}},"pm2_global":266.1}},"Contry / La Silla":{"Casas":{"n":103,"brackets":{"mediano":{"pm2":203.7,"n":6,"conf":"baja","p25":0.967,"p75":1.23},"medGrande":{"pm2":172.2,"n":9,"conf":"baja","p25":0.898,"p75":1.121},"grande":{"pm2":125.9,"n":32,"conf":"alta","p25":0.962,"p75":1.019},"xl":{"pm2":112.6,"n":42,"conf":"media","p25":0.949,"p75":1.191},"xxl":{"pm2":92.8,"n":14,"conf":"baja","p25":0.958,"p75":1.14}},"pm2_global":124.3},"Departamentos":{"n":87,"brackets":{"compacto":{"pm2":340.2,"n":15,"conf":"media","p25":0.942,"p75":1.035},"chico":{"pm2":327.5,"n":9,"conf":"baja","p25":0.652,"p75":1.132},"mediano":{"pm2":228.0,"n":42,"conf":"alta","p25":0.86,"p75":1.203},"medGrande":{"pm2":212.5,"n":19,"conf":"media","p25":0.791,"p75":1.076}},"pm2_global":224.1}},"Cumbres / Poniente":{"Casas":{"n":255,"brackets":{"mediano":{"pm2":159.4,"n":8,"conf":"baja","p25":0.996,"p75":1.033},"medGrande":{"pm2":138.0,"n":28,"conf":"alta","p25":0.907,"p75":1.111},"grande":{"pm2":109.6,"n":116,"conf":"alta","p25":0.928,"p75":1.027},"xl":{"pm2":99.9,"n":80,"conf":"alta","p25":0.884,"p75":1.106},"xxl":{"pm2":87.5,"n":22,"conf":"media","p25":0.913,"p75":1.168}},"pm2_global":109.2},"Departamentos":{"n":55,"brackets":{"compacto":{"pm2":337.3,"n":20,"conf":"media","p25":0.929,"p75":1.153},"chico":{"pm2":266.2,"n":5,"conf":"baja","p25":0.632,"p75":1.026},"mediano":{"pm2":193.1,"n":25,"conf":"alta","p25":0.895,"p75":1.078}},"pm2_global":238.8}},"Centro / Obispado":{"Casas":{"n":51,"brackets":{"compacto":{"pm2":168.1,"n":4,"conf":"baja","p25":0.912,"p75":1.129},"chico":{"pm2":110.9,"n":5,"conf":"baja","p25":1.0,"p75":1.024},"medGrande":{"pm2":139.9,"n":4,"conf":"baja","p25":0.95,"p75":1.1},"grande":{"pm2":121.9,"n":20,"conf":"media","p25":0.902,"p75":1.049},"xl":{"pm2":119.4,"n":11,"conf":"baja","p25":0.969,"p75":1.135},"xxl":{"pm2":88.7,"n":5,"conf":"baja","p25":0.938,"p75":1.056}},"pm2_global":117.4},"Departamentos":{"n":254,"brackets":{"compacto":{"pm2":419.4,"n":34,"conf":"alta","p25":0.675,"p75":1.048},"chico":{"pm2":315.7,"n":96,"conf":"alta","p25":0.961,"p75":1.057},"mediano":{"pm2":249.2,"n":92,"conf":"alta","p25":0.861,"p75":1.136},"medGrande":{"pm2":171.5,"n":25,"conf":"alta","p25":0.889,"p75":1.19},"grande":{"pm2":186.3,"n":4,"conf":"media","p25":0.957,"p75":1.044}},"pm2_global":284.9}},"Mitras":{"Casas":{"n":33,"brackets":{"medGrande":{"pm2":129.4,"n":7,"conf":"baja","p25":0.939,"p75":1.282},"grande":{"pm2":135.7,"n":5,"conf":"baja","p25":0.909,"p75":1.0},"xl":{"pm2":130.7,"n":12,"conf":"baja","p25":0.764,"p75":1.045},"xxl":{"pm2":114.0,"n":8,"conf":"baja","p25":0.965,"p75":1.029}},"pm2_global":126.0},"Departamentos":{"n":14,"brackets":{"compacto":{"pm2":419.3,"n":4,"conf":"baja","p25":0.899,"p75":1.099},"chico":{"pm2":205.7,"n":4,"conf":"baja","p25":0.853,"p75":1.207}},"pm2_global":246.3}}}},"San Pedro Garza García":{"Casas":{"n":704,"brackets":{"mediano":{"pm2":308.2,"n":19,"conf":"media","p25":0.832,"p75":1.209},"medGrande":{"pm2":248.8,"n":34,"conf":"media","p25":0.897,"p75":1.16},"grande":{"pm2":183.1,"n":93,"conf":"alta","p25":0.799,"p75":1.12},"xl":{"pm2":176.4,"n":227,"conf":"alta","p25":0.829,"p75":1.143},"xxl":{"pm2":165.8,"n":330,"conf":"alta","p25":0.894,"p75":1.176}},"pm2_global":174.4},"Departamentos":{"n":1111,"brackets":{"compacto":{"pm2":387.8,"n":66,"conf":"alta","p25":0.917,"p75":1.104},"chico":{"pm2":449.3,"n":127,"conf":"alta","p25":0.75,"p75":1.199},"mediano":{"pm2":367.3,"n":224,"conf":"alta","p25":0.779,"p75":1.171},"medGrande":{"pm2":348.1,"n":297,"conf":"alta","p25":0.867,"p75":1.084},"grande":{"pm2":277.0,"n":159,"conf":"alta","p25":0.938,"p75":1.16},"xl":{"pm2":296.8,"n":156,"conf":"alta","p25":0.733,"p75":1.386},"xxl":{"pm2":310.0,"n":82,"conf":"alta","p25":0.943,"p75":1.206}},"pm2_global":343.3},"zonas":{"Del Valle / Campestre":{"Casas":{"n":222,"brackets":{"mediano":{"pm2":276.8,"n":7,"conf":"baja","p25":0.753,"p75":1.028},"medGrande":{"pm2":204.8,"n":15,"conf":"media","p25":0.941,"p75":1.28},"grande":{"pm2":204.5,"n":42,"conf":"alta","p25":0.921,"p75":1.074},"xl":{"pm2":184.1,"n":74,"conf":"alta","p25":0.831,"p75":1.17},"xxl":{"pm2":168.5,"n":84,"conf":"alta","p25":0.897,"p75":1.162}},"pm2_global":189.0},"Departamentos":{"n":391,"brackets":{"compacto":{"pm2":419.1,"n":30,"conf":"alta","p25":0.874,"p75":1.2},"chico":{"pm2":380.2,"n":47,"conf":"alta","p25":0.982,"p75":1.346},"mediano":{"pm2":386.4,"n":61,"conf":"alta","p25":0.721,"p75":1.124},"medGrande":{"pm2":346.7,"n":95,"conf":"alta","p25":0.84,"p75":1.118},"grande":{"pm2":280.8,"n":70,"conf":"alta","p25":0.667,"p75":1.402},"xl":{"pm2":399.0,"n":55,"conf":"alta","p25":0.634,"p75":1.079},"xxl":{"pm2":360.3,"n":33,"conf":"alta","p25":0.813,"p75":1.093}},"pm2_global":359.6}},"Chipinque / Montaña":{"Casas":{"n":199,"brackets":{"medGrande":{"pm2":264.8,"n":6,"conf":"baja","p25":0.947,"p75":1.066},"grande":{"pm2":180.4,"n":14,"conf":"baja","p25":0.931,"p75":1.14},"xl":{"pm2":182.2,"n":69,"conf":"alta","p25":0.948,"p75":1.122},"xxl":{"pm2":161.2,"n":110,"conf":"alta","p25":0.869,"p75":1.173}},"pm2_global":179.7},"Departamentos":{"n":175,"brackets":{"compacto":{"pm2":376.4,"n":18,"conf":"alta","p25":0.92,"p75":1.147},"chico":{"pm2":552.5,"n":22,"conf":"alta","p25":0.858,"p75":1.065},"mediano":{"pm2":301.8,"n":45,"conf":"alta","p25":0.864,"p75":1.445},"medGrande":{"pm2":198.5,"n":30,"conf":"alta","p25":0.976,"p75":1.411},"grande":{"pm2":273.3,"n":15,"conf":"media","p25":0.836,"p75":1.278},"xl":{"pm2":270.7,"n":31,"conf":"media","p25":0.882,"p75":1.36},"xxl":{"pm2":281.2,"n":14,"conf":"baja","p25":0.915,"p75":1.31}},"pm2_global":321.3}},"Valle Oriente / San Agustín":{"Casas":{"n":60,"brackets":{"grande":{"pm2":172.5,"n":5,"conf":"baja","p25":0.985,"p75":1.15},"xl":{"pm2":185.5,"n":19,"conf":"media","p25":0.79,"p75":1.178},"xxl":{"pm2":163.9,"n":35,"conf":"alta","p25":0.949,"p75":1.071}},"pm2_global":174.5},"Departamentos":{"n":243,"brackets":{"compacto":{"pm2":508.3,"n":6,"conf":"baja","p25":0.903,"p75":1.114},"chico":{"pm2":475.6,"n":29,"conf":"alta","p25":0.928,"p75":1.263},"mediano":{"pm2":436.1,"n":48,"conf":"alta","p25":0.859,"p75":1.066},"medGrande":{"pm2":400.2,"n":83,"conf":"alta","p25":0.923,"p75":1.116},"grande":{"pm2":285.4,"n":36,"conf":"alta","p25":0.916,"p75":1.11},"xl":{"pm2":279.6,"n":26,"conf":"media","p25":0.885,"p75":1.171},"xxl":{"pm2":309.9,"n":15,"conf":"media","p25":0.819,"p75":1.0}},"pm2_global":396.4}},"Centrito / Casco Urbano":{"Casas":{"n":34,"brackets":{"medGrande":{"pm2":219.2,"n":4,"conf":"baja","p25":0.98,"p75":1.038},"grande":{"pm2":137.0,"n":13,"conf":"media","p25":0.937,"p75":1.223},"xl":{"pm2":132.0,"n":9,"conf":"baja","p25":0.92,"p75":1.223},"xxl":{"pm2":170.0,"n":7,"conf":"media","p25":0.928,"p75":1.092}},"pm2_global":133.7},"Departamentos":{"n":23,"brackets":{"mediano":{"pm2":256.2,"n":8,"conf":"baja","p25":0.848,"p75":1.105},"medGrande":{"pm2":216.2,"n":5,"conf":"baja","p25":0.992,"p75":1.023}},"pm2_global":233.2}}}},"Santa Catarina":{"Casas":{"n":123,"brackets":{"medGrande":{"pm2":149.8,"n":21,"conf":"alta","p25":0.91,"p75":1.06},"grande":{"pm2":142.0,"n":23,"conf":"alta","p25":0.959,"p75":1.04},"xl":{"pm2":155.4,"n":39,"conf":"alta","p25":0.901,"p75":1.107},"xxl":{"pm2":170.4,"n":36,"conf":"media","p25":0.909,"p75":1.104}},"pm2_global":151.1},"Departamentos":{"n":444,"brackets":{"chico":{"pm2":383.4,"n":81,"conf":"alta","p25":0.963,"p75":1.038},"mediano":{"pm2":337.9,"n":211,"conf":"alta","p25":0.944,"p75":1.053},"medGrande":{"pm2":317.2,"n":135,"conf":"alta","p25":0.95,"p75":1.108},"grande":{"pm2":259.9,"n":10,"conf":"baja","p25":0.892,"p75":1.085}},"pm2_global":336.3}},"Apodaca":{"Casas":{"n":209,"brackets":{"chico":{"pm2":143.6,"n":6,"conf":"baja","p25":0.814,"p75":1.133},"mediano":{"pm2":148.0,"n":36,"conf":"alta","p25":0.998,"p75":1.272},"medGrande":{"pm2":120.6,"n":70,"conf":"alta","p25":0.912,"p75":1.186},"grande":{"pm2":108.2,"n":84,"conf":"alta","p25":0.903,"p75":1.135},"xl":{"pm2":89.6,"n":11,"conf":"baja","p25":0.944,"p75":1.085}},"pm2_global":118.2},"Departamentos":{"n":22,"brackets":{"chico":{"pm2":279.1,"n":14,"conf":"media","p25":0.948,"p75":1.023},"mediano":{"pm2":233.8,"n":6,"conf":"baja","p25":0.971,"p75":1.038}},"pm2_global":264.6}},"Guadalupe":{"Casas":{"n":102,"brackets":{"mediano":{"pm2":118.0,"n":16,"conf":"media","p25":0.891,"p75":1.228},"medGrande":{"pm2":111.2,"n":32,"conf":"alta","p25":0.918,"p75":1.049},"grande":{"pm2":83.9,"n":33,"conf":"alta","p25":0.993,"p75":1.294},"xl":{"pm2":89.8,"n":14,"conf":"baja","p25":0.859,"p75":1.13},"xxl":{"pm2":93.9,"n":6,"conf":"baja","p25":0.999,"p75":1.001}},"pm2_global":98.7},"Departamentos":{"n":57,"brackets":{"chico":{"pm2":232.6,"n":12,"conf":"baja","p25":0.78,"p75":1.137},"mediano":{"pm2":183.1,"n":38,"conf":"alta","p25":0.986,"p75":1.133},"medGrande":{"pm2":139.0,"n":5,"conf":"baja","p25":1.0,"p75":1.182}},"pm2_global":193.8}},"García":{"Casas":{"n":137,"brackets":{"mediano":{"pm2":171.5,"n":7,"conf":"baja","p25":0.88,"p75":1.049},"medGrande":{"pm2":112.7,"n":49,"conf":"alta","p25":0.961,"p75":1.069},"grande":{"pm2":103.4,"n":59,"conf":"alta","p25":0.925,"p75":1.068},"xl":{"pm2":106.7,"n":18,"conf":"media","p25":0.854,"p75":1.021}},"pm2_global":109.4}},"San Nicolás de los Garza":{"Casas":{"n":45,"brackets":{"medGrande":{"pm2":131.3,"n":11,"conf":"media","p25":0.906,"p75":1.275},"grande":{"pm2":100.4,"n":12,"conf":"media","p25":0.906,"p75":1.043},"xl":{"pm2":107.5,"n":15,"conf":"media","p25":0.707,"p75":1.213}},"pm2_global":109.3},"Departamentos":{"n":26,"brackets":{"chico":{"pm2":222.1,"n":5,"conf":"media","p25":0.956,"p75":1.072},"mediano":{"pm2":231.6,"n":13,"conf":"alta","p25":0.9,"p75":1.122}},"pm2_global":214.8}},"Santiago":{"Casas":{"n":64,"brackets":{"medGrande":{"pm2":176.0,"n":9,"conf":"baja","p25":0.931,"p75":1.149},"grande":{"pm2":153.5,"n":12,"conf":"media","p25":0.884,"p75":1.052},"xl":{"pm2":128.4,"n":26,"conf":"media","p25":0.931,"p75":1.052},"xxl":{"pm2":149.8,"n":17,"conf":"media","p25":0.79,"p75":1.192}},"pm2_global":141.2}},"Escobedo":{"Casas":{"n":28,"brackets":{"mediano":{"pm2":168.5,"n":8,"conf":"baja","p25":0.938,"p75":1.059},"grande":{"pm2":126.3,"n":15,"conf":"alta","p25":0.844,"p75":1.007}},"pm2_global":126.9}}}};
+const ASESORES = ["Abil Razo","Adriana Elizondo","Berta Sepúlveda","Cynthia Soto","Diana Huerta","Diana Nuñez","Elizabeth Cantú","Erika Martinez","Eva Garza","Fernando Castillón","Fernando Martínez","Gabriela Parás","Isabel Gracia","Jaime Aguilar","Jesús Pérez","Letty Gonzalez","Mane Bortoni","Marcela Cárdenas","Marcelo Martínez","Sergio Flores","Veronica Serrano","Victoria Santos"];
+let modo = 'caract';
+let tipoSel = 'Departamentos';
+let tipoSelP = 'Departamentos';
+let calcParams = null;
+
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+function fmtMXN(n){ return '$' + (Math.round(n/100)*100).toLocaleString('es-MX'); }
+function getBracket(m2) {
+  return DATA.brackets.find(b => m2 >= b.min && m2 < b.max) || DATA.brackets[DATA.brackets.length-1];
+}
+function scrollTop(){ window.scrollTo({top: document.querySelector('.calc-wrap').offsetTop - 80, behavior:'smooth'}); }
+
+// Poblar municipios
+const muniSel = document.getElementById('f-muni');
+const munis = Object.keys(DATA.segmentos).sort((a,b) => {
+  const cnt = m => ['Casas','Departamentos'].reduce((s,t)=>s+(DATA.segmentos[m][t]?.n||0),0);
+  return cnt(b) - cnt(a);
+});
+munis.forEach(m => { const o=document.createElement('option'); o.value=m; o.textContent=m; muniSel.appendChild(o); });
+
+// Poblar asesores
+const asesorSel = document.getElementById('l-asesor');
+ASESORES.forEach(a => { const o=document.createElement('option'); o.value=a; o.textContent=a; asesorSel.appendChild(o); });
+document.getElementById('l-tiene-asesor').addEventListener('change', function(){
+  document.getElementById('asesor-q').classList.toggle('show', this.checked);
+});
+
+// Zonas dinámicas
+const zonaGroup = document.getElementById('zona-group');
+const zonaSel = document.getElementById('f-zona');
+function updateZonas() {
+  const zonas = DATA.segmentos[muniSel.value]?.zonas;
+  if (zonas) {
+    zonaSel.innerHTML = '<option value="">General / No estoy seguro</option>';
+    Object.keys(zonas).sort().forEach(z => {
+      const o=document.createElement('option'); o.value=z; o.textContent=z; zonaSel.appendChild(o);
+    });
+    zonaGroup.style.display = 'block';
+  } else {
+    zonaGroup.style.display = 'none';
+    zonaSel.innerHTML = '';
+  }
+}
+muniSel.addEventListener('change', () => { updateZonas(); updateBracketHint(); });
+updateZonas();
+
+// Toggles tipo
+document.querySelectorAll('.tog:not(.ptog)').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tog:not(.ptog)').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); tipoSel = btn.dataset.tipo; updateBracketHint();
+  });
+});
+document.querySelectorAll('.ptog').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ptog').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); tipoSelP = btn.dataset.tipo; updatePBracketHint();
+  });
+});
+
+// Sliders
+const m2Input = document.getElementById('f-m2');
+function updateBracketHint() {
+  const m2 = parseInt(m2Input.value);
+  document.getElementById('m2-display').textContent = m2;
+  document.getElementById('bracket-hint').innerHTML = '<i class="fa-solid fa-bed"></i> Equivale aproximadamente a: ' + getBracket(m2).label;
+}
+m2Input.addEventListener('input', updateBracketHint);
+updateBracketHint();
+
+const pm2Input = document.getElementById('p-m2');
+function updatePBracketHint() {
+  const m2 = parseInt(pm2Input.value);
+  document.getElementById('pm2-display').textContent = m2;
+  document.getElementById('p-bracket-hint').innerHTML = '<i class="fa-solid fa-bed"></i> Equivale aproximadamente a: ' + getBracket(m2).label;
+}
+pm2Input.addEventListener('input', updatePBracketHint);
+updatePBracketHint();
+
+// Formato con comas en presupuesto
+const presupInput = document.getElementById('p-presup');
+presupInput.addEventListener('input', function(){
+  const digits = this.value.replace(/\D/g,'');
+  this.value = digits ? parseInt(digits).toLocaleString('es-MX') : '';
+  document.getElementById('presup-warn').classList.remove('show');
+});
+function getPresup(){ return parseInt(presupInput.value.replace(/\D/g,'')) || 0; }
+
+// Toggle de modo
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    modo = btn.dataset.mode;
+    resetViews();
+  });
+});
+function resetViews() {
+  document.getElementById('paso-form').style.display = modo==='caract' ? 'block' : 'none';
+  document.getElementById('paso-presup').style.display = modo==='presup' ? 'block' : 'none';
+  document.getElementById('paso-lead').classList.remove('show');
+  document.getElementById('paso-result').classList.remove('show');
+  document.getElementById('paso-result-p').classList.remove('show');
+  document.getElementById('mode-toggle').style.display = 'grid';
+}
+
+// Motor de cálculo
+function getSegment(muni, zona, tipo) {
+  const m = DATA.segmentos[muni];
+  if (!m) return null;
+  if (zona && m.zonas?.[zona]?.[tipo]) return { seg: m.zonas[zona][tipo], scope: zona };
+  return m[tipo] ? { seg: m[tipo], scope: muni } : null;
+}
+function estimar(seg, m2, amueblado) {
+  const br = getBracket(m2);
+  const b = seg.brackets[br.key];
+  let pm2, conf, n, p25f, p75f, esFallback;
+  if (b) { pm2=b.pm2; conf=b.conf; n=b.n; p25f=b.p25; p75f=b.p75; esFallback=false; }
+  else { pm2=seg.pm2_global; conf='baja'; n=seg.n; p25f=0.85; p75f=1.18; esFallback=true; }
+  let est = pm2 * m2;
+  if (amueblado) est *= DATA.factor_amueblado;
+  return { est, lo: est*p25f, hi: est*p75f, pm2: Math.round(est/m2), n, conf, bracket: br.label, raro: (conf==='baja' || n < 12 || esFallback) };
+}
+
+// Modo características
+document.getElementById('btn-calc').addEventListener('click', () => {
+  const muni = muniSel.value;
+  const zona = zonaSel.value || null;
+  const m2 = parseInt(m2Input.value);
+  const amueblado = document.getElementById('f-amueblado').checked;
+  const found = getSegment(muni, zona, tipoSel);
+  if (!found) { alert('No hay datos suficientes para esa combinación. Intenta con otro municipio o tipo.'); return; }
+  const r = estimar(found.seg, m2, amueblado);
+  calcParams = { modo:'caract', muni, zona, tipo: tipoSel, m2, amueblado, scope: found.scope, ...r };
+  document.getElementById('paso-form').style.display = 'none';
+  document.getElementById('mode-toggle').style.display = 'none';
+  document.getElementById('paso-lead').classList.add('show');
+  scrollTop();
+});
+
+// Modo presupuesto
+document.getElementById('btn-presup').addEventListener('click', () => {
+  const presup = getPresup();
+  const warn = document.getElementById('presup-warn');
+  if (!presup) {
+    warn.innerHTML = 'Escribe tu presupuesto mensual para hacer la búsqueda.';
+    warn.classList.add('show');
+    return;
+  }
+  if (presup < 5000) {
+    warn.innerHTML = '<strong>Tu presupuesto está por debajo del punto de entrada actual del mercado.</strong> La renta habitacional formal en la Zona Metropolitana hoy inicia alrededor de los $6,000–$8,000 mensuales en las zonas más accesibles. Con presupuestos menores existe la opción de rentar por habitación, aunque ADBR no maneja ese formato. Una alternativa real: <strong>sumar presupuesto con roomies</strong> — entre 2 o 3 personas pueden acceder a una propiedad completa dividiendo el costo.';
+    warn.classList.add('show');
+    return;
+  }
+  const m2 = parseInt(pm2Input.value);
+  const amueblado = document.getElementById('p-amueblado').checked;
+  const opciones = [];
+  for (const muni of Object.keys(DATA.segmentos)) {
+    const m = DATA.segmentos[muni];
+    if (m.zonas) {
+      for (const z of Object.keys(m.zonas)) {
+        if (m.zonas[z][tipoSelP]) {
+          const r = estimar(m.zonas[z][tipoSelP], m2, amueblado);
+          opciones.push({ nombre: z, sub: muni, ...r });
+        }
+      }
+    } else if (m[tipoSelP]) {
+      const r = estimar(m[tipoSelP], m2, amueblado);
+      opciones.push({ nombre: muni, sub: 'Zona Metropolitana', ...r });
+    }
+  }
+  calcParams = { modo:'presup', presup, m2, tipo: tipoSelP, amueblado, opciones };
+  document.getElementById('paso-presup').style.display = 'none';
+  document.getElementById('mode-toggle').style.display = 'none';
+  document.getElementById('paso-lead').classList.add('show');
+  scrollTop();
+});
+
+// Lead + resultado
+document.getElementById('btn-lead').addEventListener('click', async () => {
+  const nombre = document.getElementById('l-nombre').value.trim();
+  const tel = document.getElementById('l-tel').value.trim();
+  const tieneAsesor = document.getElementById('l-tiene-asesor').checked;
+  const asesor = tieneAsesor ? (document.getElementById('l-asesor').value || 'No especificado') : 'Sin asesor (nuevo lead)';
+  if (!nombre || tel.replace(/\D/g,'').length < 10) {
+    alert('Por favor escribe tu nombre y un número de WhatsApp válido (10 dígitos).');
+    return;
+  }
+  if (tieneAsesor && !document.getElementById('l-asesor').value) {
+    alert('Selecciona a tu asesor de la lista, o desactiva la opción si aún no tienes uno.');
+    return;
+  }
+  const btn = document.getElementById('btn-lead');
+  btn.disabled = true;
+  btn.innerHTML = 'Procesando... <i class="fa-solid fa-circle-notch fa-spin"></i>';
+
+  let busqueda, resumen;
+  if (calcParams.modo === 'caract') {
+    busqueda = calcParams.tipo + ' en ' + (calcParams.zona ? calcParams.zona + ', ' : '') + calcParams.muni + ', ' + calcParams.m2 + 'm2 (' + calcParams.bracket + ')' + (calcParams.amueblado ? ', amueblado' : '');
+    resumen = fmtMXN(calcParams.est) + ' (rango ' + fmtMXN(calcParams.lo) + ' – ' + fmtMXN(calcParams.hi) + ')';
+  } else {
+    busqueda = 'PRESUPUESTO: ' + fmtMXN(calcParams.presup) + '/mes · ' + calcParams.tipo + ' mín. ' + calcParams.m2 + 'm2' + (calcParams.amueblado ? ', amueblado' : '');
+    const alcanza = calcParams.opciones.filter(o => o.est <= calcParams.presup).map(o => o.nombre).slice(0,5);
+    resumen = alcanza.length ? 'Alcanza en: ' + alcanza.join(', ') : 'No alcanza en ninguna zona registrada';
+  }
+  try {
+    await fetch('https://formspree.io/f/xqenddbk', {
+      method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify({ origen:'Calculadora de Renta v3', nombre, telefono: tel, asesor, busqueda, resultado: resumen })
+    });
+  } catch(e) {}
+
+  document.getElementById('paso-lead').classList.remove('show');
+  if (calcParams.modo === 'caract') mostrarResultadoCaract();
+  else mostrarResultadoPresup();
+  btn.disabled = false;
+  btn.innerHTML = 'Ver mi resultado <i class="fa-solid fa-eye"></i>';
+});
+
+function mostrarResultadoCaract() {
+  const p = calcParams;
+  document.getElementById('res-desc').textContent =
+    p.tipo.slice(0,-1) + ' de ' + p.m2 + ' m² en ' + p.scope + (p.amueblado ? ' · amueblado' : '');
+  document.getElementById('res-main').textContent = fmtMXN(p.est) + ' /mes';
+  document.getElementById('res-rango').textContent = fmtMXN(p.lo) + ' – ' + fmtMXN(p.hi);
+  document.getElementById('rm-pm2').textContent = '$' + p.pm2 + '/m²';
+  document.getElementById('rm-n').textContent = p.n.toLocaleString('es-MX');
+  const confLabels = {alta:'Alta ✓', media:'Media', baja:'Referencial'};
+  document.getElementById('rm-conf').textContent = confLabels[p.conf] || p.conf;
+  document.getElementById('res-rareza').classList.toggle('show', p.raro);
+  document.getElementById('paso-result').classList.add('show');
+  scrollTop();
+}
+
+function mostrarResultadoPresup() {
+  const p = calcParams;
+  document.getElementById('resp-desc').textContent =
+    p.tipo.slice(0,-1) + ' de mín. ' + p.m2 + ' m²' + (p.amueblado ? ' amueblado' : '') + ' · hasta ' + fmtMXN(p.presup) + '/mes';
+  const list = document.getElementById('zona-list');
+  const empty = document.getElementById('zona-empty');
+  const roomies = document.getElementById('res-roomies');
+  list.innerHTML = '';
+
+  // Fit: de MAYOR a menor precio (zonas premium primero). Cercanas: de menor a mayor.
+  const fit = p.opciones.filter(o => o.est <= p.presup).sort((a,b) => b.est - a.est);
+  const cerca = p.opciones.filter(o => o.est > p.presup && o.est <= p.presup * 1.25).sort((a,b) => a.est - b.est).slice(0, 3);
+
+  if (fit.length === 0) {
+    empty.style.display = 'block';
+    empty.innerHTML = '<strong>Tu presupuesto está por debajo del estimado en las zonas registradas para ese tamaño.</strong> Opciones: reducir el tamaño mínimo, o considerar estas zonas que están cerca de tu rango:';
+  } else {
+    empty.style.display = 'none';
+  }
+
+  let hayRaros = false;
+  function row(o, cls, badge) {
+    if (o.raro) hayRaros = true;
+    const rareTag = o.raro ? ' · <span class="zi-rare">⚠ oferta limitada</span>' : '';
+    return '<div class="zona-item ' + cls + '">' +
+      '<div class="zi-icon"><i class="fa-solid fa-location-dot"></i></div>' +
+      '<div class="zi-body"><div class="zi-name">' + o.nombre + '</div>' +
+      '<div class="zi-sub">' + o.sub + ' · ' + o.n + ' operaciones de referencia' + rareTag + '</div></div>' +
+      '<div class="zi-price"><div class="zp">' + fmtMXN(o.est) + '</div>' +
+      '<div class="zl">' + badge + '</div></div></div>';
+  }
+  fit.forEach(o => {
+    const holgura = (p.presup - o.est) / o.est;
+    const cls = holgura > 0.15 ? 'fit-holgado' : 'fit-justo';
+    const badge = holgura > 0.15 ? 'te sobra margen' : 'dentro de rango';
+    list.innerHTML += row(o, cls, badge);
+  });
+  cerca.forEach(o => {
+    const falta = o.est - p.presup;
+    list.innerHTML += row(o, 'fit-no', '+' + fmtMXN(falta) + ' aprox.');
+  });
+
+  // Tip roomies: presupuesto bajo o sin resultados
+  if (fit.length === 0 || p.presup <= 14000) {
+    const x2 = fmtMXN(p.presup * 2), x3 = fmtMXN(p.presup * 3);
+    roomies.innerHTML = '<strong><i class="fa-solid fa-user-group"></i> ¿Has considerado compartir con roomies?</strong> Sumando presupuestos se abren muchas más opciones: entre 2 personas tu rango sube a ' + x2 + '/mes, y entre 3 alcanza ' + x3 + '/mes — suficiente para propiedades más amplias y mejor ubicadas, dividiendo el costo por persona.';
+    roomies.classList.add('show');
+  } else {
+    roomies.classList.remove('show');
+  }
+
+  document.getElementById('resp-rareza').classList.toggle('show', hayRaros);
+  document.getElementById('paso-result-p').classList.add('show');
+  scrollTop();
+}
+
+document.querySelectorAll('.btn-again').forEach(b => b.addEventListener('click', () => { resetViews(); scrollTop(); }));
+</script>
+</body>
+</html>
