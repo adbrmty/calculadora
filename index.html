@@ -576,12 +576,13 @@ document.getElementById('btn-lead').addEventListener('click', async () => {
 
 function personalizarCTA(prefix, mensaje) {
   const a = calcParams.asesorObj;
+  const tel = a ? '52' + a.t : '528181431003';
+  document.getElementById('cta-' + prefix + '-btn').href = 'https://wa.me/' + tel + '?text=' + encodeURIComponent(mensaje);
   if (!a) return;
   const nombrePila = a.n.split(' ')[0];
   document.getElementById('cta-' + prefix + '-title').textContent = 'Continúa con ' + a.n;
   document.getElementById('cta-' + prefix + '-text').textContent = 'Comparte este resultado con tu asesor para encontrar opciones reales que se ajusten a tu búsqueda.';
   document.getElementById('cta-' + prefix + '-label').textContent = 'Enviar a ' + nombrePila + ' por WhatsApp';
-  document.getElementById('cta-' + prefix + '-btn').href = 'https://wa.me/52' + a.t + '?text=' + encodeURIComponent(mensaje);
 }
 
 function mostrarResultadoCaract() {
