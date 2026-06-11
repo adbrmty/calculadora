@@ -559,7 +559,7 @@ document.getElementById('btn-lead').addEventListener('click', async () => {
     resumen = alcanza.length ? 'Alcanza en: ' + alcanza.join(', ') : 'No alcanza en ninguna zona registrada';
   }
   try {
-    await fetch('https://formspree.io/f/xqenddbk', {
+    await fetch('https://formspree.io/f/mjgdeero', {
       method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
       body: JSON.stringify({ origen:'Calculadora de Renta v3', nombre, telefono: tel, asesor, busqueda, resultado: resumen })
     });
